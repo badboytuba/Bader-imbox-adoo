@@ -80,7 +80,7 @@ class MailChannel(models.Model):
     def _generate_avatar_gateway(self):
         if self.gateway_id.gateway_type == "whatsapp":
             path = get_resource_path(
-                "mail_gateway_whatsapp", "static/description", "icon.svg"
+                "bader_inbox", "static/description", "icon.svg"
             )
             with open(path, "r") as f:
                 avatar = f.read()

@@ -7,7 +7,7 @@
 
     <menuitem id="menu_whatsapp_root"
               name="Bader Inbox"
-              web_icon="mail_gateway_whatsapp,static/description/icon.png"
+              web_icon="bader_inbox,static/description/icon.png"
               sequence="45"/>
 
 

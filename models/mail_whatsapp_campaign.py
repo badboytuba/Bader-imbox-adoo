@@ -329,7 +329,7 @@ class MailWhatsAppCampaign(models.Model):
         
         # Schedule next batch
         if self.state == "running":
-            self.env.ref("mail_gateway_whatsapp.ir_cron_campaign_batch")._trigger(
+            self.env.ref("bader_inbox.ir_cron_campaign_batch")._trigger(
                 at=fields.Datetime.now() + timedelta(seconds=self.batch_delay)
             )
 

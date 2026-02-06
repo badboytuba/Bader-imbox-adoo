@@ -285,7 +285,7 @@ class TestMailGatewayWhatsApp(MailGatewayTestCase):
             [("gateway_id", "=", self.gateway.id)]
         )
         with mute_logger(
-            "odoo.addons.mail_gateway_whatsapp.models.mail_gateway_whatsapp"
+            "odoo.addons.bader_inbox.models.bader_inbox"
         ):
             message = channel.message_post(
                 attachments=[("demo.xml", b"IMAGE")],

@@ -162,7 +162,7 @@ class MailWhatsAppTranscription(models.Model):
         """Transcribe using OpenAI Whisper API"""
         # Get API key from gateway or system parameters
         api_key = self.env["ir.config_parameter"].sudo().get_param(
-            "mail_gateway_whatsapp.openai_api_key"
+            "bader_inbox.openai_api_key"
         )
         
         if not api_key:
@@ -201,7 +201,7 @@ class MailWhatsAppTranscription(models.Model):
     def _transcribe_google(self, audio_data):
         """Transcribe using Google Speech-to-Text API"""
         api_key = self.env["ir.config_parameter"].sudo().get_param(
-            "mail_gateway_whatsapp.google_speech_api_key"
+            "bader_inbox.google_speech_api_key"
         )
         
         if not api_key:
@@ -256,7 +256,7 @@ class MailWhatsAppTranscription(models.Model):
         
         # Auto-transcribe if enabled
         auto_transcribe = self.env["ir.config_parameter"].sudo().get_param(
-            "mail_gateway_whatsapp.auto_transcribe_audio", "False"
+            "bader_inbox.auto_transcribe_audio", "False"
         )
         
         if auto_transcribe == "True":

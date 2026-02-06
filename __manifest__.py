@@ -28,11 +28,11 @@
     ],
     "assets": {
         "mail.assets_messaging": [
-            "mail_gateway_whatsapp/static/src/models/**/*.js",
+            "bader_inbox/static/src/models/**/*.js",
         ],
         "web.assets_backend": [
-            "mail_gateway_whatsapp/static/src/components/**/*.xml",
-            "mail_gateway_whatsapp/static/src/components/**/*.js",
+            "bader_inbox/static/src/components/**/*.xml",
+            "bader_inbox/static/src/components/**/*.js",
         ],
     },
 }

@@ -210,10 +210,10 @@
     <!-- =========================== -->
 
     <!-- Extend mail.gateway to add provider selection -->
-    <record id="view_mail_gateway_whatsapp_provider" model="ir.ui.view">
+    <record id="view_bader_inbox_provider" model="ir.ui.view">
         <field name="name">mail.gateway.whatsapp.provider.form</field>
         <field name="model">mail.gateway</field>
-        <field name="inherit_id" ref="mail_gateway_whatsapp.view_mail_gateway_form"/>
+        <field name="inherit_id" ref="bader_inbox.view_mail_gateway_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='whatsapp_from_phone']" position="before">
                 <field name="whatsapp_provider" widget="radio" 

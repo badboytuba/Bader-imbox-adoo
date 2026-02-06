@@ -4,7 +4,7 @@
 <odoo>
 
     <record model="ir.ui.view" id="whatsapp_composer_form_view">
-        <field name="name">whatsapp.composer.form (in mail_gateway_whatsapp)</field>
+        <field name="name">whatsapp.composer.form (in bader_inbox)</field>
         <field name="model">whatsapp.composer</field>
         <field name="arch" type="xml">
             <form string="Whatsapp Composer">
