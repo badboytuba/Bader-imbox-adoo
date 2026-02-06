@@ -228,11 +228,11 @@
             <xpath expr="//field[@name='whatsapp_version']" position="attributes">
                 <attribute name="attrs">{'invisible': [('whatsapp_provider', '=', 'evolution')]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='whatsapp_webhook_secret']" position="attributes">
+            <xpath expr="//field[@name='whatsapp_security_key']" position="attributes">
                 <attribute name="attrs">{'invisible': [('whatsapp_provider', '=', 'evolution')]}</attribute>
             </xpath>
             <!-- Evolution API Link -->
-            <xpath expr="//field[@name='whatsapp_webhook_secret']" position="after">
+            <xpath expr="//field[@name='whatsapp_security_key']" position="after">
                 <field name="evolution_instance_id" 
                        attrs="{'invisible': [('whatsapp_provider', '!=', 'evolution')], 'required': [('whatsapp_provider', '=', 'evolution')]}"/>
                 <button name="action_open_evolution_config" type="object"
