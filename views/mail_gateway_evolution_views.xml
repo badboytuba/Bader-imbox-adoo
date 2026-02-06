@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =========================== -->
+    <!-- Evolution API Configuration -->
+    <!-- =========================== -->
+
+    <record id="view_gateway_evolution_form" model="ir.ui.view">
+        <field name="name">mail.gateway.evolution.form</field>
+        <field name="model">mail.gateway.evolution</field>
+        <field name="arch" type="xml">
+            <form string="Evolution API Configuration">
+                <header>
+                    <button name="action_create_instance" type="object" 
+                            string="Create Instance" 
+                            class="btn-primary" 
+                            states="draft,disconnected,error"
+                            icon="fa-plus"/>
+                    <button name="action_refresh_qrcode" type="object" 
+                            string="Refresh QR Code" 
+                            class="btn-secondary" 
+                            states="qr_ready,connecting"
+                            icon="fa-refresh"/>
+                    <button name="action_check_status" type="object" 
+                            string="Check Status" 
+                            class="btn-secondary"
+                            icon="fa-sync"/>
+                    <button name="action_configure_webhook" type="object" 
+                            string="Configure Webhook" 
+                            class="btn-success" 
+                            states="connected"
+                            attrs="{'invisible': [('webhook_configured', '=', True)]}"
+                            icon="fa-plug"/>
+                    <button name="action_disconnect" type="object" 
+                            string="Disconnect" 
+                            class="btn-danger" 
+                            states="connected,qr_ready,connecting"
+                            icon="fa-power-off"
+                            confirm="Are you sure you want to disconnect this WhatsApp instance?"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,qr_ready,connected"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-paper-plane-o" type="object" name="action_check_status">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="messages_sent"/></span>
+                                <span class="o_stat_text">Sent</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-inbox" type="object" name="action_check_status">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="messages_received"/></span>
+                                <span class="o_stat_text">Received</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <!-- Connection Status Banner -->
+                    <div class="alert alert-success" role="alert" 
+                         attrs="{'invisible': [('state', '!=', 'connected')]}">
+                        <i class="fa fa-check-circle"/> 
+                        <strong>Connected!</strong> 
+                        WhatsApp connected to <field name="phone_name" readonly="1"/> 
+                        (<field name="phone_number" readonly="1"/>)
+                    </div>
+                    
+                    <div class="alert alert-warning" role="alert" 
+                         attrs="{'invisible': [('state', '!=', 'qr_ready')]}">
+                        <i class="fa fa-qrcode"/> 
+                        <strong>Scan QR Code!</strong> 
+                        Open WhatsApp on your phone and scan the QR code below.
+                    </div>
+                    
+                    <div class="alert alert-danger" role="alert" 
+                         attrs="{'invisible': [('state', '!=', 'error')]}">
+                        <i class="fa fa-exclamation-triangle"/> 
+                        <strong>Error:</strong> 
+                        <field name="error_message" readonly="1"/>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1><field name="instance_name" placeholder="my-whatsapp-instance"/></h1>
+                    </div>
+                    
+                    <!-- QR Code Display -->
+                    <div class="text-center mb-4" 
+                         attrs="{'invisible': ['|', ('state', '!=', 'qr_ready'), ('qrcode_base64', '=', False)]}">
+                        <div class="card d-inline-block p-4" style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <h4 class="text-muted mb-3">
+                                <i class="fa fa-mobile"/> Scan with WhatsApp
+                            </h4>
+                            <field name="qrcode_base64" widget="image" class="img-fluid" 
+                                   style="max-width: 280px; border-radius: 8px;"/>
+                            <p class="text-muted mt-3 mb-0">
+                                <i class="fa fa-clock-o"/> 
+                                Expires: <field name="qrcode_expiry" widget="remaining_days"/>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <group>
+                        <group string="Connection Settings">
+                            <field name="gateway_id"/>
+                            <field name="api_url" placeholder="https://whatsapp.odontowave.com"/>
+                            <field name="api_key" password="True"/>
+                        </group>
+                        <group string="Connection Info">
+                            <field name="connected_at" readonly="1"/>
+                            <field name="last_activity" readonly="1"/>
+                            <field name="webhook_configured" readonly="1" widget="boolean_toggle"/>
+                            <field name="webhook_url" readonly="1" widget="CopyClipboardChar"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_gateway_evolution_tree" model="ir.ui.view">
+        <field name="name">mail.gateway.evolution.tree</field>
+        <field name="model">mail.gateway.evolution</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="instance_name"/>
+                <field name="gateway_id"/>
+                <field name="phone_number"/>
+                <field name="phone_name"/>
+                <field name="messages_sent"/>
+                <field name="last_activity"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'connected'"
+                       decoration-warning="state == 'qr_ready'"
+                       decoration-info="state == 'connecting'"
+                       decoration-danger="state in ('error','disconnected')"
+                       decoration-muted="state == 'draft'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_gateway_evolution_kanban" model="ir.ui.view">
+        <field name="name">mail.gateway.evolution.kanban</field>
+        <field name="model">mail.gateway.evolution</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="instance_name"/>
+                <field name="phone_number"/>
+                <field name="phone_name"/>
+                <field name="state"/>
+                <field name="qrcode_base64"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="row">
+                                <div class="col-8">
+                                    <strong><field name="instance_name"/></strong>
+                                    <div t-if="record.phone_number.value">
+                                        <i class="fa fa-phone text-success"/> 
+                                        <field name="phone_number"/>
+                                    </div>
+                                    <div t-if="record.phone_name.value" class="text-muted">
+                                        <field name="phone_name"/>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'connected'"
+                                           decoration-warning="state == 'qr_ready'"
+                                           decoration-danger="state in ('error','disconnected')"/>
+                                </div>
+                            </div>
+                            <!-- QR Code preview for pending connections -->
+                            <div t-if="record.state.raw_value == 'qr_ready' and record.qrcode_base64.value" 
+                                 class="text-center mt-2">
+                                <img t-att-src="record.qrcode_base64.value" 
+                                     style="max-width: 150px; border-radius: 8px;"/>
+                                <p class="text-muted small">Scan to connect</p>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_gateway_evolution" model="ir.actions.act_window">
+        <field name="name">Evolution API Instances</field>
+        <field name="res_model">mail.gateway.evolution</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first WhatsApp connection via QR Code
+            </p>
+            <p>
+                Connect any WhatsApp number by scanning a QR code, 
+                similar to WhatsApp Web. No Meta Business verification required!
+            </p>
+        </field>
+    </record>
+
+    <!-- Add to WhatsApp menu -->
+    <menuitem id="menu_whatsapp_evolution"
+              name="Evolution API (QR Code)"
+              parent="menu_whatsapp_config"
+              action="action_gateway_evolution"
+              sequence="5"/>
+
+    <!-- =========================== -->
+    <!-- Gateway Provider Selection -->
+    <!-- =========================== -->
+
+    <!-- Extend mail.gateway to add provider selection -->
+    <record id="view_mail_gateway_whatsapp_provider" model="ir.ui.view">
+        <field name="name">mail.gateway.whatsapp.provider.form</field>
+        <field name="model">mail.gateway</field>
+        <field name="inherit_id" ref="mail_gateway_whatsapp.view_mail_gateway_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='whatsapp_from_phone']" position="before">
+                <field name="whatsapp_provider" widget="radio" 
+                       options="{'horizontal': true}"/>
+            </xpath>
+            <xpath expr="//field[@name='whatsapp_from_phone']" position="attributes">
+                <attribute name="attrs">{'invisible': [('whatsapp_provider', '=', 'evolution')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='token']" position="attributes">
+                <attribute name="attrs">{'invisible': [('whatsapp_provider', '=', 'evolution')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='whatsapp_version']" position="attributes">
+                <attribute name="attrs">{'invisible': [('whatsapp_provider', '=', 'evolution')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='whatsapp_webhook_secret']" position="attributes">
+                <attribute name="attrs">{'invisible': [('whatsapp_provider', '=', 'evolution')]}</attribute>
+            </xpath>
+            <!-- Evolution API Link -->
+            <xpath expr="//field[@name='whatsapp_webhook_secret']" position="after">
+                <field name="evolution_instance_id" 
+                       attrs="{'invisible': [('whatsapp_provider', '!=', 'evolution')], 'required': [('whatsapp_provider', '=', 'evolution')]}"/>
+                <button name="action_open_evolution_config" type="object"
+                        string="Configure Evolution API"
+                        class="btn-link"
+                        attrs="{'invisible': [('whatsapp_provider', '!=', 'evolution')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

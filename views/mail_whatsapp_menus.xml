@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =========================== -->
+    <!-- WhatsApp Main Menu -->
+    <!-- =========================== -->
+
+    <menuitem id="menu_whatsapp_root"
+              name="WhatsApp"
+              web_icon="mail_gateway_whatsapp,static/description/icon.png"
+              sequence="45"/>
+
+    <!-- Conversations -->
+    <menuitem id="menu_whatsapp_conversations"
+              name="Conversations"
+              parent="menu_whatsapp_root"
+              sequence="10"/>
+
+    <menuitem id="menu_whatsapp_assignment"
+              name="My Assignments"
+              parent="menu_whatsapp_conversations"
+              action="action_whatsapp_assignment"
+              sequence="10"/>
+
+    <!-- Campaigns -->
+    <menuitem id="menu_whatsapp_campaigns"
+              name="Campaigns"
+              parent="menu_whatsapp_root"
+              action="action_whatsapp_campaign"
+              sequence="20"/>
+
+    <!-- Automation -->
+    <menuitem id="menu_whatsapp_automation_parent"
+              name="Automation"
+              parent="menu_whatsapp_root"
+              sequence="30"/>
+
+    <menuitem id="menu_whatsapp_automation"
+              name="Automation Rules"
+              parent="menu_whatsapp_automation_parent"
+              action="action_whatsapp_automation"
+              sequence="10"/>
+
+    <menuitem id="menu_whatsapp_chatbot"
+              name="AI Chatbot"
+              parent="menu_whatsapp_automation_parent"
+              action="action_whatsapp_chatbot"
+              sequence="20"/>
+
+    <menuitem id="menu_whatsapp_flows"
+              name="Flows"
+              parent="menu_whatsapp_automation_parent"
+              action="action_whatsapp_flow"
+              sequence="30"/>
+
+    <menuitem id="menu_whatsapp_scheduled"
+              name="Scheduled Messages"
+              parent="menu_whatsapp_automation_parent"
+              action="action_whatsapp_scheduled"
+              sequence="40"/>
+
+    <!-- Content -->
+    <menuitem id="menu_whatsapp_content"
+              name="Content"
+              parent="menu_whatsapp_root"
+              sequence="40"/>
+
+    <menuitem id="menu_whatsapp_catalog"
+              name="Product Catalog"
+              parent="menu_whatsapp_content"
+              action="action_whatsapp_catalog"
+              sequence="10"/>
+
+    <menuitem id="menu_whatsapp_transcriptions"
+              name="Audio Transcriptions"
+              parent="menu_whatsapp_content"
+              action="action_whatsapp_transcription"
+              sequence="20"/>
+
+    <!-- Analytics -->
+    <menuitem id="menu_whatsapp_analytics_parent"
+              name="Analytics"
+              parent="menu_whatsapp_root"
+              sequence="50"/>
+
+    <menuitem id="menu_whatsapp_analytics"
+              name="Daily Metrics"
+              parent="menu_whatsapp_analytics_parent"
+              action="action_whatsapp_analytics"
+              sequence="10"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_whatsapp_config"
+              name="Configuration"
+              parent="menu_whatsapp_root"
+              sequence="100"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_whatsapp_queues"
+              name="Agent Queues"
+              parent="menu_whatsapp_config"
+              action="action_whatsapp_queue"
+              sequence="10"/>
+
+</odoo>

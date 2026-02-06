@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Scheduled Messages Cron -->
+    <record id="ir_cron_whatsapp_scheduled_messages" model="ir.cron">
+        <field name="name">WhatsApp: Send Scheduled Messages</field>
+        <field name="model_id" ref="model_mail_whatsapp_scheduled"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_scheduled_messages()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Campaign Batch Processing Cron -->
+    <record id="ir_cron_campaign_batch" model="ir.cron">
+        <field name="name">WhatsApp: Process Campaign Batches</field>
+        <field name="model_id" ref="model_mail_whatsapp_campaign"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_process_campaigns()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Analytics Daily Computation Cron -->
+    <record id="ir_cron_whatsapp_analytics" model="ir.cron">
+        <field name="name">WhatsApp: Compute Daily Analytics</field>
+        <field name="model_id" ref="model_mail_whatsapp_analytics"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_compute_daily_stats()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Agent Auto-Offline Cron -->
+    <record id="ir_cron_agent_auto_offline" model="ir.cron">
+        <field name="name">WhatsApp: Auto-Offline Inactive Agents</field>
+        <field name="model_id" ref="model_mail_whatsapp_agent_status"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_auto_offline()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Audio Transcription Cron -->
+    <record id="ir_cron_whatsapp_transcription" model="ir.cron">
+        <field name="name">WhatsApp: Process Pending Transcriptions</field>
+        <field name="model_id" ref="model_mail_whatsapp_transcription"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_process_pending()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Evolution API: Check Connections -->
+    <record id="ir_cron_evolution_check_connections" model="ir.cron">
+        <field name="name">WhatsApp Evolution: Check Connections</field>
+        <field name="model_id" ref="model_mail_gateway_evolution"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_connections()</field>
+        <field name="interval_number">2</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Evolution API: Refresh QR Codes -->
+    <record id="ir_cron_evolution_refresh_qrcodes" model="ir.cron">
+        <field name="name">WhatsApp Evolution: Refresh QR Codes</field>
+        <field name="model_id" ref="model_mail_gateway_evolution"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh_qrcodes()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>
+

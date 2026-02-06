@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =========================== -->
+    <!-- Agent Queue Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_queue_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.queue.form</field>
+        <field name="model">mail.whatsapp.queue</field>
+        <field name="arch" type="xml">
+            <form string="Agent Queue">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Queue Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Settings">
+                            <field name="active"/>
+                            <field name="sequence"/>
+                            <field name="assignment_method"/>
+                            <field name="max_conversations_per_agent"/>
+                            <field name="auto_assign_new"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="waiting_count" readonly="1"/>
+                            <field name="active_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Gateways">
+                        <field name="gateway_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Agents">
+                        <field name="agent_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_queue_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.queue.tree</field>
+        <field name="model">mail.whatsapp.queue</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="assignment_method"/>
+                <field name="waiting_count"/>
+                <field name="active_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_queue" model="ir.actions.act_window">
+        <field name="name">Agent Queues</field>
+        <field name="res_model">mail.whatsapp.queue</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- Agent Assignment Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_assignment_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.assignment.form</field>
+        <field name="model">mail.whatsapp.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Conversation Assignment">
+                <header>
+                    <button name="action_assign_to_me" type="object" string="Assign to Me" 
+                            class="btn-primary" states="waiting"/>
+                    <button name="action_resolve" type="object" string="Resolve" 
+                            class="btn-success" states="active"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="waiting,active,resolved"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="queue_id"/>
+                            <field name="channel_id"/>
+                            <field name="agent_id"/>
+                        </group>
+                        <group>
+                            <field name="assigned_at"/>
+                            <field name="first_response_at"/>
+                            <field name="resolved_at"/>
+                        </group>
+                    </group>
+                    <group string="Metrics">
+                        <field name="response_time_seconds"/>
+                        <field name="resolution_time_seconds"/>
+                        <field name="resolution_type"/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_assignment_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.assignment.tree</field>
+        <field name="model">mail.whatsapp.assignment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="channel_id"/>
+                <field name="queue_id"/>
+                <field name="agent_id"/>
+                <field name="assigned_at"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'waiting'"
+                       decoration-info="state == 'active'"
+                       decoration-success="state == 'resolved'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_assignment" model="ir.actions.act_window">
+        <field name="name">Assignments</field>
+        <field name="res_model">mail.whatsapp.assignment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- Analytics Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_analytics_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.analytics.form</field>
+        <field name="model">mail.whatsapp.analytics</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Analytics">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="gateway_id"/>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <group string="Messages">
+                        <group>
+                            <field name="messages_sent"/>
+                            <field name="messages_received"/>
+                            <field name="messages_delivered"/>
+                        </group>
+                        <group>
+                            <field name="messages_read"/>
+                            <field name="messages_failed"/>
+                            <field name="templates_sent"/>
+                        </group>
+                    </group>
+                    <group string="Conversations">
+                        <group>
+                            <field name="new_conversations"/>
+                            <field name="active_conversations"/>
+                            <field name="resolved_conversations"/>
+                        </group>
+                        <group>
+                            <field name="avg_response_time"/>
+                            <field name="avg_resolution_time"/>
+                        </group>
+                    </group>
+                    <group string="Engagement">
+                        <group>
+                            <field name="button_clicks"/>
+                            <field name="list_selections"/>
+                        </group>
+                        <group>
+                            <field name="flow_completions"/>
+                            <field name="reactions_received"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_analytics_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.analytics.tree</field>
+        <field name="model">mail.whatsapp.analytics</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="gateway_id"/>
+                <field name="messages_sent"/>
+                <field name="messages_delivered"/>
+                <field name="messages_read"/>
+                <field name="messages_failed"/>
+                <field name="new_conversations"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_analytics_graph" model="ir.ui.view">
+        <field name="name">mail.whatsapp.analytics.graph</field>
+        <field name="model">mail.whatsapp.analytics</field>
+        <field name="arch" type="xml">
+            <graph string="Analytics" type="line">
+                <field name="date" type="row"/>
+                <field name="messages_sent" type="measure"/>
+                <field name="messages_delivered" type="measure"/>
+                <field name="messages_read" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_analytics_pivot" model="ir.ui.view">
+        <field name="name">mail.whatsapp.analytics.pivot</field>
+        <field name="model">mail.whatsapp.analytics</field>
+        <field name="arch" type="xml">
+            <pivot string="Analytics">
+                <field name="date" type="row"/>
+                <field name="gateway_id" type="col"/>
+                <field name="messages_sent" type="measure"/>
+                <field name="messages_delivered" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_analytics" model="ir.actions.act_window">
+        <field name="name">Analytics</field>
+        <field name="res_model">mail.whatsapp.analytics</field>
+        <field name="view_mode">graph,tree,pivot,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- Scheduled Messages Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_scheduled_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.scheduled.form</field>
+        <field name="model">mail.whatsapp.scheduled</field>
+        <field name="arch" type="xml">
+            <form string="Scheduled Message">
+                <header>
+                    <button name="action_schedule" type="object" string="Schedule" 
+                            class="btn-primary" states="draft"/>
+                    <button name="action_send_now" type="object" string="Send Now" 
+                            states="draft,scheduled"/>
+                    <button name="action_cancel" type="object" string="Cancel" 
+                            states="draft,scheduled"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,scheduled,sent"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="gateway_id"/>
+                            <field name="recipient_phone"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="scheduled_datetime"/>
+                            <field name="timezone"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <group string="Message">
+                        <field name="message_type"/>
+                        <field name="body" attrs="{'invisible': [('message_type', '!=', 'text')]}"/>
+                        <field name="template_id" attrs="{'invisible': [('message_type', '!=', 'template')]}"/>
+                        <field name="template_variables" attrs="{'invisible': [('message_type', '!=', 'template')]}"/>
+                        <field name="interactive_id" attrs="{'invisible': [('message_type', '!=', 'interactive')]}"/>
+                    </group>
+                    <group string="Result" attrs="{'invisible': [('state', 'not in', ['sent', 'failed'])]}">
+                        <field name="sent_datetime"/>
+                        <field name="whatsapp_message_id"/>
+                        <field name="error_message"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_scheduled_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.scheduled.tree</field>
+        <field name="model">mail.whatsapp.scheduled</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="recipient_phone"/>
+                <field name="partner_id"/>
+                <field name="message_type"/>
+                <field name="scheduled_datetime"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'scheduled'"
+                       decoration-success="state == 'sent'"
+                       decoration-danger="state == 'failed'"
+                       decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_scheduled" model="ir.actions.act_window">
+        <field name="name">Scheduled Messages</field>
+        <field name="res_model">mail.whatsapp.scheduled</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- Product Catalog Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_catalog_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.catalog.form</field>
+        <field name="model">mail.whatsapp.catalog</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Product Catalog">
+                <header>
+                    <button name="action_connect_catalog" type="object" string="Connect" 
+                            class="btn-primary" states="draft"/>
+                    <button name="action_sync_products" type="object" string="Sync Products" 
+                            class="btn-success" states="connected"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,connected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Catalog Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gateway_id"/>
+                            <field name="catalog_id" placeholder="Meta Catalog ID"/>
+                        </group>
+                        <group>
+                            <field name="product_count"/>
+                            <field name="last_sync"/>
+                        </group>
+                    </group>
+                    <group string="Products to Sync">
+                        <field name="sync_product_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <group string="Error" attrs="{'invisible': [('error_message', '=', False)]}">
+                        <field name="error_message" readonly="1" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_catalog_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.catalog.tree</field>
+        <field name="model">mail.whatsapp.catalog</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="gateway_id"/>
+                <field name="catalog_id"/>
+                <field name="product_count"/>
+                <field name="last_sync"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'connected'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_catalog" model="ir.actions.act_window">
+        <field name="name">Product Catalogs</field>
+        <field name="res_model">mail.whatsapp.catalog</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- Audio Transcription Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_transcription_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.transcription.form</field>
+        <field name="model">mail.whatsapp.transcription</field>
+        <field name="arch" type="xml">
+            <form string="Audio Transcription">
+                <header>
+                    <button name="transcribe" type="object" string="Transcribe" 
+                            class="btn-primary" states="pending"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="pending,processing,completed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="gateway_id"/>
+                            <field name="channel_id"/>
+                            <field name="provider"/>
+                        </group>
+                        <group>
+                            <field name="whatsapp_media_id"/>
+                            <field name="audio_mimetype"/>
+                            <field name="audio_duration"/>
+                        </group>
+                    </group>
+                    <group string="Transcription" attrs="{'invisible': [('state', '!=', 'completed')]}">
+                        <field name="transcription" nolabel="1"/>
+                        <field name="language"/>
+                        <field name="confidence"/>
+                    </group>
+                    <group string="Error" attrs="{'invisible': [('state', '!=', 'failed')]}">
+                        <field name="error_message" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_transcription_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.transcription.tree</field>
+        <field name="model">mail.whatsapp.transcription</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="create_date"/>
+                <field name="channel_id"/>
+                <field name="provider"/>
+                <field name="transcription" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'pending'"
+                       decoration-info="state == 'processing'"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'failed'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_transcription" model="ir.actions.act_window">
+        <field name="name">Audio Transcriptions</field>
+        <field name="res_model">mail.whatsapp.transcription</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

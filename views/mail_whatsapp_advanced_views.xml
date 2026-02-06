@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =========================== -->
+    <!-- WhatsApp Flows Views -->
+    <!-- =========================== -->
+    
+    <record id="view_whatsapp_flow_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.flow.form</field>
+        <field name="model">mail.whatsapp.flow</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Flow">
+                <header>
+                    <button name="action_deploy_flow" type="object" string="Deploy to Meta" 
+                            class="btn-primary" states="draft"/>
+                    <button name="action_publish_flow" type="object" string="Publish" 
+                            class="btn-success" attrs="{'invisible': [('flow_id', '=', False)]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,published"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Flow Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gateway_id"/>
+                            <field name="category"/>
+                            <field name="flow_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="target_model"/>
+                            <field name="cta_text"/>
+                        </group>
+                    </group>
+                    <group string="Message Content">
+                        <field name="header_text"/>
+                        <field name="body_text"/>
+                        <field name="footer_text"/>
+                    </group>
+                    <notebook>
+                        <page string="Screens" name="screens">
+                            <field name="screen_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="screen_id"/>
+                                    <field name="title"/>
+                                    <field name="next_button_text"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Field Mappings" name="mappings">
+                            <field name="field_mapping_ids">
+                                <tree editable="bottom">
+                                    <field name="flow_field_name"/>
+                                    <field name="odoo_field_name"/>
+                                    <field name="transform"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_flow_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.flow.tree</field>
+        <field name="model">mail.whatsapp.flow</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="gateway_id"/>
+                <field name="category"/>
+                <field name="target_model"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'published'"
+                       decoration-info="state == 'draft'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_flow" model="ir.actions.act_window">
+        <field name="name">WhatsApp Flows</field>
+        <field name="res_model">mail.whatsapp.flow</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- WhatsApp Automation Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_automation_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.automation.form</field>
+        <field name="model">mail.whatsapp.automation</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Automation">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="toggle_active" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Automation Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Trigger">
+                            <field name="trigger_type"/>
+                            <field name="gateway_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Action">
+                            <field name="action_type"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Keyword matching -->
+                    <group string="Keyword Matching" 
+                           attrs="{'invisible': [('trigger_type', '!=', 'keyword')]}">
+                        <field name="keywords" placeholder="One keyword per line"/>
+                        <field name="keyword_match_type"/>
+                    </group>
+                    
+                    <!-- Button matching -->
+                    <group string="Button Matching" 
+                           attrs="{'invisible': [('trigger_type', '!=', 'button_click')]}">
+                        <field name="button_id"/>
+                    </group>
+                    
+                    <!-- Send message action -->
+                    <group string="Response Message" 
+                           attrs="{'invisible': [('action_type', '!=', 'send_message')]}">
+                        <field name="response_message" placeholder="Hi {name}! How can I help?"/>
+                    </group>
+                    
+                    <!-- Template action -->
+                    <group attrs="{'invisible': [('action_type', '!=', 'send_template')]}">
+                        <field name="template_id"/>
+                    </group>
+                    
+                    <!-- Interactive action -->
+                    <group attrs="{'invisible': [('action_type', '!=', 'send_interactive')]}">
+                        <field name="interactive_id"/>
+                    </group>
+                    
+                    <!-- Flow action -->
+                    <group attrs="{'invisible': [('action_type', '!=', 'send_flow')]}">
+                        <field name="flow_id"/>
+                    </group>
+                    
+                    <!-- Create lead action -->
+                    <group string="Lead Settings" 
+                           attrs="{'invisible': [('action_type', '!=', 'create_lead')]}">
+                        <field name="lead_team_id"/>
+                        <field name="lead_user_id"/>
+                    </group>
+                    
+                    <!-- Assign agent action -->
+                    <group string="Assignment" 
+                           attrs="{'invisible': [('action_type', '!=', 'assign_agent')]}">
+                        <field name="agent_id"/>
+                        <field name="agent_queue_id"/>
+                    </group>
+                    
+                    <!-- Python code action -->
+                    <group string="Python Code" 
+                           attrs="{'invisible': [('action_type', '!=', 'execute_code')]}">
+                        <field name="python_code" placeholder="# Variables: channel, message, partner, env"/>
+                    </group>
+                    
+                    <group string="Conditions">
+                        <field name="only_first_message"/>
+                        <field name="business_hours_only"/>
+                    </group>
+                    
+                    <group string="Statistics">
+                        <field name="trigger_count" readonly="1"/>
+                        <field name="last_triggered" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_automation_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.automation.tree</field>
+        <field name="model">mail.whatsapp.automation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="trigger_type"/>
+                <field name="action_type"/>
+                <field name="trigger_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_automation" model="ir.actions.act_window">
+        <field name="name">Automations</field>
+        <field name="res_model">mail.whatsapp.automation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- WhatsApp Chatbot Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_chatbot_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.chatbot.form</field>
+        <field name="model">mail.whatsapp.chatbot</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp AI Chatbot">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="toggle_active" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Chatbot Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="AI Provider">
+                            <field name="provider"/>
+                            <field name="api_key" password="True"/>
+                            <field name="model_name"/>
+                            <field name="api_endpoint" 
+                                   attrs="{'invisible': [('provider', '!=', 'custom')]}"/>
+                        </group>
+                        <group string="Behavior">
+                            <field name="temperature"/>
+                            <field name="max_tokens"/>
+                            <field name="include_conversation_history"/>
+                            <field name="max_history_messages"/>
+                        </group>
+                    </group>
+                    <group string="Gateways">
+                        <field name="gateway_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="System Prompt">
+                        <field name="system_prompt" nolabel="1" 
+                               placeholder="You are a helpful customer service assistant..."/>
+                    </group>
+                    <group string="Knowledge Base">
+                        <field name="knowledge_base" nolabel="1" 
+                               placeholder="Information about your business, products, services..."/>
+                    </group>
+                    <group string="Human Handoff">
+                        <group>
+                            <field name="enable_handoff"/>
+                            <field name="handoff_queue_id"/>
+                        </group>
+                        <group>
+                            <field name="handoff_keywords" 
+                                   attrs="{'invisible': [('enable_handoff', '=', False)]}"
+                                   placeholder="humano&#10;atendente&#10;pessoa"/>
+                            <field name="handoff_message" 
+                                   attrs="{'invisible': [('enable_handoff', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <group string="Statistics">
+                        <field name="messages_handled" readonly="1"/>
+                        <field name="handoffs_triggered" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_chatbot_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.chatbot.tree</field>
+        <field name="model">mail.whatsapp.chatbot</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="provider"/>
+                <field name="model_name"/>
+                <field name="messages_handled"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_chatbot" model="ir.actions.act_window">
+        <field name="name">AI Chatbot</field>
+        <field name="res_model">mail.whatsapp.chatbot</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- =========================== -->
+    <!-- WhatsApp Campaign Views -->
+    <!-- =========================== -->
+
+    <record id="view_whatsapp_campaign_form" model="ir.ui.view">
+        <field name="name">mail.whatsapp.campaign.form</field>
+        <field name="model">mail.whatsapp.campaign</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Campaign">
+                <header>
+                    <button name="action_prepare" type="object" string="Prepare" 
+                            class="btn-secondary" states="draft"/>
+                    <button name="action_start" type="object" string="Start Campaign" 
+                            class="btn-primary" states="draft,scheduled"/>
+                    <button name="action_pause" type="object" string="Pause" 
+                            states="running"/>
+                    <button name="action_resume" type="object" string="Resume" 
+                            states="paused"/>
+                    <button name="action_cancel" type="object" string="Cancel" 
+                            states="draft,scheduled,running,paused"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,scheduled,running,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Campaign Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Settings">
+                            <field name="gateway_id"/>
+                            <field name="template_id" domain="[('gateway_id', '=', gateway_id)]"/>
+                            <field name="scheduled_datetime"/>
+                        </group>
+                        <group string="Rate Limiting">
+                            <field name="rate_limit"/>
+                            <field name="batch_size"/>
+                            <field name="batch_delay"/>
+                        </group>
+                    </group>
+                    <group string="Recipients">
+                        <group>
+                            <field name="recipient_model"/>
+                            <field name="recipient_domain" 
+                                   attrs="{'invisible': [('recipient_model', '=', 'manual')]}"/>
+                        </group>
+                        <group>
+                            <field name="partner_ids" widget="many2many_tags" 
+                                   attrs="{'invisible': [('recipient_model', '!=', 'res.partner')]}"/>
+                            <field name="manual_phones" 
+                                   attrs="{'invisible': [('recipient_model', '!=', 'manual')]}"
+                                   placeholder="+5511999999999&#10;+5521888888888"/>
+                        </group>
+                    </group>
+                    <group string="Template Variables">
+                        <field name="variable_mapping" 
+                               placeholder='{"1": "name", "2": "phone"}'/>
+                    </group>
+                    <group string="Progress">
+                        <group>
+                            <field name="total_recipients"/>
+                            <field name="sent_count"/>
+                            <field name="delivered_count"/>
+                        </group>
+                        <group>
+                            <field name="read_count"/>
+                            <field name="failed_count"/>
+                            <field name="progress" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Messages" name="messages">
+                            <field name="message_ids" readonly="1">
+                                <tree>
+                                    <field name="phone"/>
+                                    <field name="partner_id"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state in ('delivered','read')"
+                                           decoration-info="state == 'sent'"
+                                           decoration-danger="state == 'failed'"
+                                           decoration-muted="state == 'pending'"/>
+                                    <field name="sent_at"/>
+                                    <field name="error_message"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_campaign_tree" model="ir.ui.view">
+        <field name="name">mail.whatsapp.campaign.tree</field>
+        <field name="model">mail.whatsapp.campaign</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="gateway_id"/>
+                <field name="template_id"/>
+                <field name="total_recipients"/>
+                <field name="sent_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-info="state in ('draft','scheduled')"
+                       decoration-warning="state == 'running'"
+                       decoration-muted="state in ('paused','cancelled')"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_campaign" model="ir.actions.act_window">
+        <field name="name">Campaigns</field>
+        <field name="res_model">mail.whatsapp.campaign</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
