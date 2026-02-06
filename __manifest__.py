@@ -2,14 +2,15 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
-    "name": "Mail Whatsapp Gateway",
+    "name": "Bader Inbox",
     "summary": """
-        Set a gateway for whatsapp with modern API support, AI chatbot, 
-        flows, campaigns, multi-agent, and analytics""",
+        WhatsApp gateway with Cloud API & Evolution API (QR Code), 
+        AI chatbot, flows, campaigns, multi-agent, and analytics""",
     "version": "16.0.3.0.0",
     "license": "AGPL-3",
-    "author": "Creu Blanca, Dixmit, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/social",
+    "author": "Bader Business, Creu Blanca, Odoo Community Association (OCA)",
+    "website": "https://github.com/badboytuba/Bader-imbox-adoo",
+
     "depends": ["mail_gateway", "phone_validation", "crm"],
     "external_dependencies": {"python": ["requests_toolbelt", "requests"]},
     "data": [

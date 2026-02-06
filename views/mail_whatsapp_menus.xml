@@ -6,9 +6,10 @@
     <!-- =========================== -->
 
     <menuitem id="menu_whatsapp_root"
-              name="WhatsApp"
+              name="Bader Inbox"
               web_icon="mail_gateway_whatsapp,static/description/icon.png"
               sequence="45"/>
+
 
     <!-- Conversations -->
     <menuitem id="menu_whatsapp_conversations"
