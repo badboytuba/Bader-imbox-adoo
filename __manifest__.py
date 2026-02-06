@@ -23,8 +23,8 @@
         "views/mail_gateway.xml",
         "views/mail_whatsapp_advanced_views.xml",
         "views/mail_whatsapp_agent_views.xml",
-        "views/mail_gateway_evolution_views.xml",
         "views/mail_whatsapp_menus.xml",
+        "views/mail_gateway_evolution_views.xml",
     ],
     "assets": {
         "mail.assets_messaging": [
